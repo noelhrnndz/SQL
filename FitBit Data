@@ -1,0 +1,68 @@
+--A full analysis of this project can be found at noel-hernandez.com
+
+--Using SQL, find the number of unique users in each dataset
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.daily_activity`
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.daily_calories`
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.daily_steps`
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.hourly_steps`
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.sleep_day`
+
+SELECT
+COUNT (DISTINCT Id) AS num_of_IDs
+FROM `capstone-398808.fitbit.weight.info`
+
+--Each dataset returned 33 unique users except for sleep_day (24 users) and weight_info (8 users).
+--I omitted weight_info since there was not enough data.
+
+--Using COUNT to find how many times users wore and logged their data into their FitBit
+
+SELECT
+COUNT (Id) AS days_logged
+FROM `capstone-398808.fitbit.daily_activity`
+GROUP BY Id
+ORDER BY days_logged DESC
+
+--From the query above, I saved the results to create a new table called "number_of_logins" in BigQuery to count how many users logged their data
+
+SELECT days_logged,
+COUNT (*) AS num_of_users
+FROM `capstone-398808.fitbit.number_of_logins`
+GROUP BY days_logged
+
+--Results show that of the 33 total participants, 21 users (63%) were active and logged their data throughout all 31 days.
+--Looking at individual days of the week to examine when are users most and least active.
+
+SELECT
+DISTINCT Day,
+AVG(TotalSteps) AS avg_steps,
+AVG(Calories) AS avg_calories_burned
+FROM `capstone-398808.fitbit.daily_activity`
+GROUP BY Day
+ORDER BY avg_steps DESC
+
+--We can note that on average, Saturdays and Tuesdays are the most active days, while Sunday shows the least amount of activity. 
+--Analyzing what time of the day users were active.
+
+SELECT
+ActivityHour,
+SUM(StepTotal) AS sum_steps
+FROM `capstone-398808.fitbit.hourly_steps`
+GROUP BY ActivityHour
+
+--The data shows that majority of users are active from 6AM thru 10PM and most active  around lunch time, 12PM thru 2PM, and dinner time, 5PM thru 7PM.
+
